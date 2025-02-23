@@ -1,6 +1,7 @@
 import  { promises as fsPromises } from 'fs';
 import path from 'path';
-import express, { Express, Request, Response, NextFunction } from 'express';
+import express from 'express';
+import type { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 
 /**
@@ -68,6 +69,23 @@ app.get('/read/usernames', (req: UserRequest, res: Response) => {
     return { id: user.id, username: user.username };
   });
   res.send(usernames);
+});
+
+// a function that returns a username's email
+app.get('/read/username/:name', (req: UserRequest, res: Response) => {
+  // Get the inputted username
+  const inputUsername = req.params.name;
+
+  // Find the user
+  const user = users.find(user => user.username === inputUsername);
+
+  // Respond with either the user's email or an error
+  if (user) {
+    res.json([{ id: user.id, email: user.email }]);
+  }
+  else {
+    res.status(404).send('No user found with that name');
+  }
 });
 
 // a middleware function that parses the request body to json
